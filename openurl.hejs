@@ -1,0 +1,221 @@
+Application.AddScriptInfo("D66272B6-0571-4CB7-AA7E-74251423FEC8", 
+						  "OpenURL", 
+						  "1.0", 
+						  "Open content of remote URL in text editor", 
+						  "HippoEDIT.com", 
+						  "supportbox@hippoedit.com", 
+						  "http://wiki.hippoedit.com/plugins/open-url");
+
+// Test URL : http://www.hippoedit.com/
+
+//${ region Icons }
+var nIcon = Application.RegisterImageString(
+'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACRklEQVR4XpWTzUtUYRjFf/dDveZMY6Zm\
+ NjmZRoZWZroJAqNggmhRyCyibf9ERMuI/oE2gUSbaNGuEKEEtUJS6GPKSkrHUWe4FxtHxntn5n51Lwzj\
+ x+iiA4eX9+M5nPPwvILrugiCIAMB/g85r9aSAYCwqqrzjusiiqJPX3QbgfLq3wcDgXZgQaQEx6WM1VWd\
+ kdE5hp994snwDK9GvlE0bQQocRNlAUkSPUp8mFri3VQKo1phYj5HPGPydkbj3qMx4rNp/43voFLAP1xM\
+ rPE1rtHaHUaJtHCw/zh6fZCfukUi5/Lw8ThG3kSUpEoBP9/4+yQNx5o40tZAfdN+2iONaIKEoSisGiYZ\
+ S+b5yy9IezmYnllELVpkNywKBZN1o4DtgoVI0XVoDDczO6+yFTIluI5LLltkdGoZ5VAD665IStNxCxa2\
+ Zfv3Hk1f0Hdb6UCukjkaqafwN8frsTm05SwhwcHK6gh6AdNzFf/4m+ZQ1e5NFICBc62Q09FTWSK1MhdP\
+ NHK9v43OliCikSdQI3Htcjeu61YKIAgMDfUyeKYFRYQ3E79orpPpDgeptm1q9kncutpFT89h8vl8ZQ/8\
+ XKLHB/ejPH3xmemVDf6sZFn0GKqDu7fP0nsqRDKZJJVKfweWd0Yoj23sxmnueFzT0lSbGjevnKQjohAO\
+ h0kkEuqlS4MDXgxzmwO2dLauRqav4wDnOy/gOA66rrOwkGNyclKNxWJdXrG+W4Qyt6L0W8lkMj+i0Wif\
+ tzd2m4N0raK0szdcYMkrttmBfxPN9rxPBmjWAAAAAElFTkSuQmCC');
+//${ endregion }
+
+function fileNameFromURI(url){
+	url = url.substring(0, (url.indexOf("#") == -1) ? url.length : url.indexOf("#"));
+	url = url.substring(0, (url.indexOf("?") == -1) ? url.length : url.indexOf("?"));
+	url = url.substring(url.lastIndexOf("/") + 1, url.length);
+	if(url.length == 0)
+		url = "index";
+	return url;
+}
+
+function mime2syntax(mime_type) {
+	var syntax = "";
+	mime_type.toLowerCase();
+ 	switch (mime_type) {
+	case "text/plain": // Textual data; Defined in RFC 2046 and RFC 3676
+		syntax = "txt"; 
+		break;
+	case "text/css": //Cascading Style Sheets; Defined in RFC 2318
+		syntax = "css";
+		break;
+	case "text/csv": //Comma-separated values; Defined in RFC 4180
+	case "text/vcard": //vCard (contact information); Defined in RFC 6350 
+		syntax = "csv";
+		break;
+	case "application/json": //Comma-separated values; Defined in RFC 4180
+		syntax = "json";
+		break;
+	case "text/javascript": //JavaScript; Defined in and made obsolete in RFC 4329
+	case "application/javascript": //JavaScript (RFC 4329)
+	case "application/ecmascript":
+		syntax = "js";
+		break;
+	case "text/html": //HTML; Defined in RFC 2854
+		syntax = "html";
+		break;
+	case "text/xml": //Extensible Markup Language; Defined in RFC 3023
+	case "application/atom+xml":
+	case "application/soap+xml":
+	case "application/xhtml+xml":
+	case "application/xml-dtd":
+	case "application/xop+xml":
+		syntax = "xml";
+		break;
+	}
+
+	return syntax;
+}
+
+function alias2codepage(alias) {
+	var code_page = 0;
+	alias.toLowerCase();
+ 	switch (alias) {
+		case "utf-8":
+			code_page = 65001;
+			break;
+	}
+	return code_page;
+}
+
+function onHTTPError(req) {
+	status('HTTP error : ' + req.status + ' - ' + req.statusText, eMessageTypeError);
+}
+
+function processReq(req, url) {
+	var content_type = req.getResponseHeader("Content-Type").match(/^\s*(.+?)(?:;\s*charset\s*=\s*(.+?))$/i);
+	var syntax = (content_type && content_type.length > 1)?mime2syntax(content_type[1]):"";
+	var code_page = (content_type && content_type.length > 2)?alias2codepage(content_type[2]):0; 
+	var oDoc = NewFile(fileNameFromURI(url), req.responseText, syntax, code_page);
+	oDoc.originalURL = url;
+}
+
+var vCommand = new Command("OpenURL.OpenURL", "Open URL...", "Open content of remote URL in text editor", nIcon);
+vCommand.onHandleRequest = function(req) {
+	processReq(req, vCommand.url);
+}
+vCommand.onExecute = function() {
+	__include("he_http.hejs");
+	__include("he_edit.hejs");
+	
+	var dialog_template = 
+	'@<dialog title="Enter URL to open" resizing="horizontal" modal="false" id="open_url"> \
+	   <group> \
+		   <paragraph text="URL:" minwidth="4" style="required" align="left"/> \
+	   	   <history_edit id="url" cuebanner="Enter here URL (required)" autocomplete="url" minwidth="40" required="true"/> \
+	   </group> \
+	   <group uniform="true" align="right|bottom"> \
+		   <button title="&amp;OK" returnval="ok" default="true"/> \
+		   <button title="&amp;Cancel" returnval="cancel"/> \
+	   </group> \
+	</dialog>@';
+
+	this.url = GetSelectedText(null); 
+	if ( dialog(dialog_template, this) == "ok" && this.url != "")
+		sendRequest(this.url, this.onHandleRequest, null, onHTTPError);	
+}
+
+Application.RegisterCommand(vCommand);
+
+////////////////////////////////////////////////////////////////////////
+// Update main menu with our items
+Application.onInitMainMenu = function (bUpdate){
+	if ( !bUpdate ) {
+		var menu_location = this.GetMenuItemPos("File.Open");
+		if (menu_location.Menu !== null && menu_location.Position != -1) {
+			menu_location.Menu.InsertItem(menu_location.Position + 1, "", vCommand);
+			menu_location.Menu.InsertItem(menu_location.Position + 1, "");
+		}
+	}
+}
+
+var r = /(?:(?:f|ht){1}tps?:\/\/)[-a-zA-Z0-9@:%_\\+.~#?&\/=]+/i;
+
+////////////////////////////////////////////////////////////////////////
+// Update context menu with our items
+Application.onInitContextMenu = function (style, view, line, pos){
+	if ( view && (style == eCMSNormal || style == eCMSReadOnly) ) {
+		var sURL = "";
+		if ( view.Selection.IsEmpty || !view.Selection.IsInside(new Position(line, pos))) {
+			var sLine = view.Document.GetLine(line);
+			var found = sLine.search(r);
+			if ( found == -1 || found > pos || r.lastIndex < pos)
+				return;
+			sURL = sLine.substring(found, r.lastIndex);
+		} else {
+			var sSelection = view.Document.GetText(view.Selection);
+			if ( sSelection.search(r) == -1 )
+				return;
+			sURL = sSelection;
+		}		
+		var vContextOpen = new Command("", "Open " + sURL, "Open content of " + sURL + " in text editor");
+		vContextOpen.onHandleRequest = function(req) {
+			processReq(req, vContextOpen.url);
+		}
+		vContextOpen.onExecute = function() {
+			__include("he_http.hejs");
+			sendRequest(this.url, this.onHandleRequest, null, onHTTPError);	
+		}
+		vContextOpen.url = sURL;
+		// add context menu item at "predefined" place
+		this.AddItem("Open " + sURL, vContextOpen, eItemPosTop);
+	}
+}
+
+function absolute(base, relative) {
+    var stack = base.split("/"),
+        parts = relative.split("/");
+    stack.pop(); // remove current file name (or empty string)
+                 // (omit if "base" is the current folder without trailing slash)
+    for (var i=0; i<parts.length; i++) {
+        if (parts[i] == ".")
+            continue;
+        if (parts[i] == "..")
+            stack.pop();
+        else
+            stack.push(parts[i]);
+    }
+    return stack.join("/");
+}
+
+////////////////////////////////////////////////////////////////////////
+// Subscribe on Edit.SmartNavigate to react on navigation requests to 
+// remote files 
+function onBeforeExecute(command)
+{	
+	var view = ActiveView; 
+	if ( view ) {
+		var myReq = {
+			onHandleRequest : function (req) {
+				processReq(req, myReq.url);
+			},
+			url : ""
+		};
+		var sLine = view.Document.GetLine(view.Position.Line);
+		var found = sLine.search(r);
+		if ( found == -1 || found > view.Position.Pos || r.lastIndex < view.Position.Pos) {
+			if ( !view.Document.originalURL ) return true;
+			var posLeft = view.Position.Pos;
+			var posRight = posLeft;
+			while ( posLeft > -1 && sLine[posLeft] != '"' && sLine[posLeft] != "'") --posLeft;
+			if ( posLeft == -1 ) return true;
+			var nLen = view.Document.GetLineLength(view.Position.Line);
+			while ( posRight < nLen && sLine[posRight] != sLine[posLeft]) ++posRight;			
+			if ( posRight == nLen ) return true;
+			myReq.url = absolute(view.Document.originalURL, sLine.substring(posLeft + 1, posRight));			
+		} else {
+			myReq.url = sLine.substring(found, r.lastIndex);
+		}
+		if ( myReq.url != "" ) {
+			__include("he_http.hejs");
+			sendRequest(myReq.url, myReq.onHandleRequest, null, onHTTPError);
+			return false;		
+		}
+	}
+	return true;
+}
+
+Application.RegisterCommandListener("Edit.SmartNavigate", new CommandListener(onBeforeExecute));
