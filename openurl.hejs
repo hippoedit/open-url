@@ -1,6 +1,6 @@
 Application.AddScriptInfo("D66272B6-0571-4CB7-AA7E-74251423FEC8", 
 						  "OpenURL", 
-						  "1.0", 
+						  "1.1", 
 						  "Open content of remote URL in text editor", 
 						  "HippoEDIT.com", 
 						  "supportbox@hippoedit.com", 
@@ -10,17 +10,19 @@ Application.AddScriptInfo("D66272B6-0571-4CB7-AA7E-74251423FEC8",
 
 //${ region Icons }
 var nIcon = Application.RegisterImageString(
-'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACRklEQVR4XpWTzUtUYRjFf/dDveZMY6Zm\
- NjmZRoZWZroJAqNggmhRyCyibf9ERMuI/oE2gUSbaNGuEKEEtUJS6GPKSkrHUWe4FxtHxntn5n51Lwzj\
- x+iiA4eX9+M5nPPwvILrugiCIAMB/g85r9aSAYCwqqrzjusiiqJPX3QbgfLq3wcDgXZgQaQEx6WM1VWd\
- kdE5hp994snwDK9GvlE0bQQocRNlAUkSPUp8mFri3VQKo1phYj5HPGPydkbj3qMx4rNp/43voFLAP1xM\
- rPE1rtHaHUaJtHCw/zh6fZCfukUi5/Lw8ThG3kSUpEoBP9/4+yQNx5o40tZAfdN+2iONaIKEoSisGiYZ\
- S+b5yy9IezmYnllELVpkNywKBZN1o4DtgoVI0XVoDDczO6+yFTIluI5LLltkdGoZ5VAD665IStNxCxa2\
- Zfv3Hk1f0Hdb6UCukjkaqafwN8frsTm05SwhwcHK6gh6AdNzFf/4m+ZQ1e5NFICBc62Q09FTWSK1MhdP\
- NHK9v43OliCikSdQI3Htcjeu61YKIAgMDfUyeKYFRYQ3E79orpPpDgeptm1q9kncutpFT89h8vl8ZQ/8\
- XKLHB/ejPH3xmemVDf6sZFn0GKqDu7fP0nsqRDKZJJVKfweWd0Yoj23sxmnueFzT0lSbGjevnKQjohAO\
- h0kkEuqlS4MDXgxzmwO2dLauRqav4wDnOy/gOA66rrOwkGNyclKNxWJdXrG+W4Qyt6L0W8lkMj+i0Wif\
- tzd2m4N0raK0szdcYMkrttmBfxPN9rxPBmjWAAAAAElFTkSuQmCC');
+'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABtlBMVEUAAAAAAAAag8MWgcQbhL0adaMA\
+ AAAAAAAAAAAISGoId7QAAAAbfK4Jd7MTVHYWhcAZe7AZgLQDgMIZg7gYgrqg6QAeib+uaioRfsb/nBKi\
+ 2v01qOUmod8Ug8Cq8QAdiL3Xdyn/rCt1x/0in/3/x0GM3CEahsDX8f8rp/qLg4WA1BAljLKQ0/+c5wC0\
+ 7ylCsOwwpuNArvVZvd9fwqSx9QAak9CIa0+maC08rezbkU8Im/Evpu7/1ID/1Y7/6IkIl+EfoOSwhVT/\
+ tDuGZ0m5p39Qt/WG14lBvpWY5hRy01OY5BXTdjM2oslav815eHrKaZhvfHdy2yr/x0jOfa6U5UOd4Z0W\
+ gbZwxvR21JVjw/i6v8C2ebrbsIG95v+s4P9Hq9/aisD/qyCDjInHlsuBiJLG7Out5M+48iEcisPI85IS\
+ ov733K2n6wzlseVvzWPr6euP3AAImelduzNMtryK2gMoofIkouwhodAToO582wBIs8rdeSBVup7lh8qI\
+ 2UWT3w9Uu5/Z+ZSs4O7D9ECU4gCj5xya4DsdibO25tKx6kH1/6prwjd3yrjN/SmZ2O+Bz0TM+UnK7eTv\
+ c4AaAAAAFXRSTlMACZXBM6wKMx5arCXQrFEy0cW9lZWq6yp0AAAA6ElEQVQY02MAAhZmCSBgZmGAApH2\
+ /gm9errd2kwQvnBGU9dEKZ2eFi2ICIu8lHpjR19nW0NJgRo/UEAwXj01s1mvtb5YWatICCgQFh4bl5ae\
+ U6daVVpeWZvAwCAWKaUTKieqK1pTVqiZmxzMoBahpOQmJyqap1GhmZ8U7c8gG+LramTipaqRVZ2dEhXA\
+ ziDgY6FvaOzhGaigkhjjx87AwCdvIC1trezuHaQoKc4JtIWNVUxGxsFKQQXI52UEuYyDVd7U3snORlKc\
+ iwPidg5OHllHF1tzTggfpIub3czZkh2oHgHY2dmhLADvAi3xcA5hWwAAAABJRU5ErkJggg==');
 //${ endregion }
 
 function fileNameFromURI(url){
@@ -58,7 +60,7 @@ function mime2syntax(mime_type) {
 		syntax = "html";
 		break;
 	case "text/xml": //Extensible Markup Language; Defined in RFC 3023
-	case "application/atom+xml":
+	case "application/atom+xml": 
 	case "application/soap+xml":
 	case "application/xhtml+xml":
 	case "application/xml-dtd":

@@ -3,7 +3,7 @@
 <package-info xmlns="http://www.hippoedit.com/xml/package-info" xmlns:smf="http://www.hippoedit.com/">
 	<id>D66272B6-0571-4CB7-AA7E-74251423FEC8</id>
 	<name>OpenURL</name>
-	<version>1.0</version>
+	<version>1.1</version>
 	<description>Open content of remote URL in text editor</description>
 	<author>HippoEDIT.com</author>
 	<email>supportbox@hippoedit.com</email>
